@@ -14,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	@Query("Select m from Member m where m.status = 1 and  m.phone = :phone")
 	Optional<Member> findByActivePhone(@Param("phone") String phone);
+
+	Optional<Member> findByPhone(String phone);
 }
