@@ -37,7 +37,8 @@ public class BaseExceptionHandler {
 				.map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
 				.collect(Collectors.joining(", "));
 
-		BaseResponse<String> response = new BaseResponse<>(HttpStatus.BAD_REQUEST, false, errors, 400, null);
+		BaseResponse<String> response = new BaseResponse<>(
+				HttpStatus.BAD_REQUEST, false, errors, 400, null);
 
 		return new ResponseEntity<>(response, response.httpStatus());
 	}

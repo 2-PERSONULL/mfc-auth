@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+	private final AuthenticationProvider authenticationProvider;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,6 +27,10 @@ public class SecurityConfig {
 						.permitAll()
 						.anyRequest()
 						.authenticated()
+				)
+				.authenticationProvider(authenticationProvider)
+				.sessionManagement((session) -> session
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				)
 				.build();
 	}
