@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mfc.auth.auth.domain.Member;
+import com.mfc.auth.auth.dto.kafka.ProfileDto;
 import com.mfc.auth.auth.dto.req.SignUpReqDto;
 import com.mfc.auth.auth.dto.req.SmsReqDto;
 import com.mfc.auth.auth.infrastructure.MemberRepository;
@@ -31,6 +32,8 @@ public class AuthServiceImpl implements AuthService {
 	private final SmsUtil smsUtil;
 
 	private final BCryptPasswordEncoder encoder;
+
+	private final KafkaProducer producer;
 
 	@Override
 	public void sendSms(SmsReqDto dto) {
@@ -56,14 +59,10 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void signUp(SignUpReqDto dto) {
+	public String signUp(SignUpReqDto dto) {
 		Member member = createMember(dto);
-
-		// if(dto.getRole().equals("USER")) { // 유저
-		// } else if(dto.getRole().equals("PARTNER")) { // 파트너
-		// } else { // 이외의 파라미터 : 예외 발생
-		// 	throw new BaseException(NO_EXIT_ROLE);
-		// }
+		producer.sendProfile(ProfileDto.toBuild(dto, member.getUuid()));
+		return member.getUuid();
 	}
 
 	// 중복 회원 검증 : 탈퇴 회원 포함 x
