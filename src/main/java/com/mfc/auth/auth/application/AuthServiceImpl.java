@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mfc.auth.auth.domain.Member;
-import com.mfc.auth.auth.dto.kafka.ProfileDto;
+import com.mfc.auth.auth.dto.kafka.InsertProfileDto;
 import com.mfc.auth.auth.dto.req.SignInReqDto;
 import com.mfc.auth.auth.dto.req.SignUpReqDto;
 import com.mfc.auth.auth.dto.req.SmsReqDto;
@@ -65,8 +65,12 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public String signUp(SignUpReqDto dto) {
+		if(!dto.getRole().equals("USER") && !dto.getRole().equals("PARTNER")) {
+			throw new BaseException(NO_EXIT_ROLE);
+		}
+
 		Member member = createMember(dto);
-		producer.sendProfile(ProfileDto.toBuild(dto, member.getUuid()));
+		producer.sendProfile(InsertProfileDto.toBuild(dto, member.getUuid()));
 		return member.getUuid();
 	}
 
