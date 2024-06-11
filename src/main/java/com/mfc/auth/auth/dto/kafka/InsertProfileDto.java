@@ -9,14 +9,14 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProfileDto {
+public class InsertProfileDto {
 	private String uuid;
 	private String nickname;
 	private List<Long> favoriteStyles;
 	private String role;
 
-	public static ProfileDto toBuild(SignUpReqDto dto, String uuid) {
-		return ProfileDto.builder()
+	public static InsertProfileDto toBuild(SignUpReqDto dto, String uuid) {
+		return InsertProfileDto.builder()
 				.uuid(uuid)
 				.nickname(dto.getNickname())
 				.favoriteStyles(dto.getFavoriteStyles())
