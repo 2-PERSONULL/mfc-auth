@@ -6,14 +6,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mfc.auth.auth.domain.Member;
 import com.mfc.auth.auth.dto.kafka.ProfileDto;
+import com.mfc.auth.auth.dto.req.SignInReqDto;
 import com.mfc.auth.auth.dto.req.SignUpReqDto;
 import com.mfc.auth.auth.dto.req.SmsReqDto;
+import com.mfc.auth.auth.dto.resp.SignInRespDto;
 import com.mfc.auth.auth.infrastructure.MemberRepository;
 import com.mfc.auth.auth.infrastructure.SmsRepository;
 import com.mfc.auth.common.exception.BaseException;
@@ -32,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
 	private final SmsUtil smsUtil;
 
 	private final BCryptPasswordEncoder encoder;
+	private final JwtTokenProvider tokenProvider;
+	private final AuthenticationManager authenticationManager;
 
 	private final KafkaProducer producer;
 
@@ -68,6 +73,23 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public boolean verifyEmail(String email) {
 		return memberRepository.findByEmail(email).isEmpty();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public SignInRespDto signIn(SignInReqDto dto) {
+		Member member = memberRepository.findByEmail(dto.getEmail())
+				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+		authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(member.getUsername(), dto.getPassword())
+		);
+
+		return SignInRespDto.builder()
+				.accessToken(tokenProvider.getAccessToken(member.getUuid()))
+				.refreshToken(tokenProvider.gerRefreshToken(member.getUuid()))
+				.uuid(member.getUuid())
+				.build();
 	}
 
 	// 중복 회원 검증 : 탈퇴 회원 포함 x

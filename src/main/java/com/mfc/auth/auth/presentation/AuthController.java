@@ -10,14 +10,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mfc.auth.auth.application.AuthService;
+import com.mfc.auth.auth.dto.req.SignInReqDto;
 import com.mfc.auth.auth.dto.req.SignUpReqDto;
 import com.mfc.auth.auth.dto.req.SmsReqDto;
+import com.mfc.auth.auth.dto.resp.SignInRespDto;
+import com.mfc.auth.auth.vo.req.SignInReqVo;
 import com.mfc.auth.auth.vo.req.SignUpReqVo;
 import com.mfc.auth.auth.vo.req.SmsReqVo;
+import com.mfc.auth.auth.vo.resp.SignInRespVo;
 import com.mfc.auth.common.response.BaseResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -54,5 +59,18 @@ public class AuthController {
 	@Operation(summary = "이메일 중복 확인 API", description = "이메일 중복 확인")
 	public BaseResponse<Boolean> verifyEmail(@PathVariable String email) {
 		return new BaseResponse<>(authService.verifyEmail(email));
+	}
+
+	@PostMapping("/signin")
+	@Operation(summary = "로그인 API", description = "로그인 성공 시 토큰, uuid, partnerCode 반환")
+	public BaseResponse<SignInRespVo> signIn(@RequestBody SignInReqVo vo, HttpServletResponse resp) {
+		SignInRespDto dto = authService.signIn(modelMapper.map(vo, SignInReqDto.class));
+		resp.addHeader("accessToken", dto.getAccessToken());
+		resp.addHeader("refreshToken", dto.getRefreshToken());
+		resp.addHeader("uuid", dto.getUuid());
+
+		return new BaseResponse<>(
+				modelMapper.map(dto, SignInRespVo.class)
+		);
 	}
 }
