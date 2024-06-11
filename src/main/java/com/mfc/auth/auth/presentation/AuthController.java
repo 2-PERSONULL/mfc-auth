@@ -2,6 +2,8 @@ package com.mfc.auth.auth.presentation;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +48,11 @@ public class AuthController {
 	public BaseResponse<String> signUp(
 			@RequestBody @Validated SignUpReqVo vo) {
 		return new BaseResponse<>(authService.signUp(modelMapper.map(vo, SignUpReqDto.class)));
+	}
+
+	@GetMapping("/email/{email}")
+	@Operation(summary = "이메일 중복 확인 API", description = "이메일 중복 확인")
+	public BaseResponse<Boolean> verifyEmail(@PathVariable String email) {
+		return new BaseResponse<>(authService.verifyEmail(email));
 	}
 }

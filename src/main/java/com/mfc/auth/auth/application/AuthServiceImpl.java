@@ -65,6 +65,11 @@ public class AuthServiceImpl implements AuthService {
 		return member.getUuid();
 	}
 
+	@Override
+	public boolean verifyEmail(String email) {
+		return memberRepository.findByEmail(email).isEmpty();
+	}
+
 	// 중복 회원 검증 : 탈퇴 회원 포함 x
 	private boolean isDuplicate(String phone) {
 		return memberRepository.findByActivePhone(phone).isPresent();
