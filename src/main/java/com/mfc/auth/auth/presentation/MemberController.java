@@ -5,6 +5,7 @@ import static com.mfc.auth.common.response.BaseResponseStatus.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mfc.auth.auth.application.MemberService;
 import com.mfc.auth.auth.dto.req.ModifyPasswordReqDto;
 import com.mfc.auth.auth.vo.req.ModifyPasswordReqVo;
+import com.mfc.auth.auth.vo.resp.MemberNameRespVo;
 import com.mfc.auth.common.exception.BaseException;
 import com.mfc.auth.common.response.BaseResponse;
 
@@ -53,5 +55,13 @@ public class MemberController {
 
 		memberService.modifyPassword(uuid, modelMapper.map(vo, ModifyPasswordReqDto.class));
 		return new BaseResponse<>();
+	}
+
+	@GetMapping("/name")
+	@Operation(summary = "회원 이름 조회 API", description = "회원 이름(실명) 조회")
+	public BaseResponse<MemberNameRespVo> getName(
+			@RequestHeader(name = "UUID", defaultValue = "") String uuid) {
+		return new BaseResponse<>(modelMapper.map(
+				memberService.getName(uuid), MemberNameRespVo.class));
 	}
 }

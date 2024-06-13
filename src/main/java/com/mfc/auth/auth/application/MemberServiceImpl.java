@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mfc.auth.auth.domain.Member;
 import com.mfc.auth.auth.dto.kafka.DeleteProfileDto;
 import com.mfc.auth.auth.dto.req.ModifyPasswordReqDto;
+import com.mfc.auth.auth.dto.resp.MemberNameRespDto;
 import com.mfc.auth.auth.infrastructure.MemberRepository;
 import com.mfc.auth.common.exception.BaseException;
 
@@ -24,8 +25,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public void resign(String uuid) {
-		Member member = memberRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+		Member member = isExist(uuid);
 
 		memberRepository.save(Member.builder()
 				.id(member.getId())
@@ -43,8 +43,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public void modifyPassword(String uuid, ModifyPasswordReqDto dto) {
-		Member member = memberRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+		Member member = isExist(uuid);
 
 		memberRepository.save(Member.builder()
 				.id(member.getId())
@@ -55,5 +54,19 @@ public class MemberServiceImpl implements MemberService {
 				.status(member.getStatus())
 				.build()
 		);
+	}
+
+	@Override
+	public MemberNameRespDto getName(String uuid) {
+		Member member = isExist(uuid);
+
+		return MemberNameRespDto.builder()
+				.name(member.getName())
+				.build();
+	}
+
+	private Member isExist(String uuid) {
+		return memberRepository.findByUuid(uuid)
+				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 	}
 }
