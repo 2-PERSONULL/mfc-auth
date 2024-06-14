@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RequestAuthInfoDto {
+public class RequestUserInfoDto {
 	private String userId;
 }
