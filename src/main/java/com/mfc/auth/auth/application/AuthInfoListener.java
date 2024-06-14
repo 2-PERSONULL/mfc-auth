@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mfc.auth.auth.domain.Member;
 import com.mfc.auth.auth.dto.kafka.AuthInfoResponse;
-import com.mfc.auth.auth.dto.kafka.RequestAuthInfoDto;
+import com.mfc.auth.auth.dto.kafka.RequestUserInfoDto;
 import com.mfc.auth.auth.infrastructure.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthInfoListener {
 
 	private final ObjectMapper objectMapper;
-	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final MemberRepository memberRepository;
 
 
 	@KafkaListener(topics = "auth-info-request", groupId = "auth-info-group")
 	public void handleAuthInfoRequest(String message) {
 		try {
-			RequestAuthInfoDto requestDto = objectMapper.readValue(message, RequestAuthInfoDto.class);
+			RequestUserInfoDto requestDto = objectMapper.readValue(message, RequestUserInfoDto.class);
 			String userId = requestDto.getUserId();
 
 			Member member = memberRepository.findByUuid(userId)
@@ -39,7 +39,7 @@ public class AuthInfoListener {
 				.userBirth(member.getBirth())
 				.build();
 
-			kafkaTemplate.send("auth-info-response", objectMapper.writeValueAsString(response));
+			kafkaTemplate.send("auth-info-response", response);
 		} catch (JsonProcessingException e) {
 			log.error("Failed to parse JSON message: {}", message, e);
 		}
