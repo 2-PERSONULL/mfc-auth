@@ -50,6 +50,7 @@ public class KafkaConfig { // yml 파일 설정으로도 충분함!
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "auth-info-group");
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
 
 		return new DefaultKafkaConsumerFactory<>(props);
