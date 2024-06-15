@@ -19,16 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthInfoListener {
 
-	private final ObjectMapper objectMapper;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final MemberRepository memberRepository;
 
-
 	@KafkaListener(topics = "auth-info-request", groupId = "auth-info-group")
-	public void handleAuthInfoRequest(String message) {
-		try {
-			RequestUserInfoDto requestDto = objectMapper.readValue(message, RequestUserInfoDto.class);
-			String userId = requestDto.getUserId();
+	public void handleAuthInfoRequest(RequestUserInfoDto dto) {
+
+			String userId = dto.getUserId();
 
 			Member member = memberRepository.findByUuid(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
@@ -40,8 +37,5 @@ public class AuthInfoListener {
 				.build();
 
 			kafkaTemplate.send("auth-info-response", response);
-		} catch (JsonProcessingException e) {
-			log.error("Failed to parse JSON message: {}", message, e);
-		}
 	}
 }
