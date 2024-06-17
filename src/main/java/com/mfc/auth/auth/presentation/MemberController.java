@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mfc.auth.auth.application.MemberService;
+import com.mfc.auth.auth.dto.resp.AuthInfoResponse;
 import com.mfc.auth.auth.dto.req.ModifyPasswordReqDto;
 import com.mfc.auth.auth.vo.req.ModifyPasswordReqVo;
 import com.mfc.auth.auth.vo.resp.MemberNameRespVo;
@@ -63,5 +65,13 @@ public class MemberController {
 			@RequestHeader(name = "UUID", defaultValue = "") String uuid) {
 		return new BaseResponse<>(modelMapper.map(
 				memberService.getName(uuid), MemberNameRespVo.class));
+	}
+
+	@GetMapping("/birth-gender/{uuid}")
+	@Operation(summary = "회원 나이성(성별) 조회 API", description = "회원 나이성(성별) 조회")
+	public BaseResponse<AuthInfoResponse> getBirthGender(
+			@PathVariable("uuid") String uuid) {
+		return new BaseResponse<>(modelMapper.map(
+				memberService.getBirthGender(uuid), AuthInfoResponse.class));
 	}
 }

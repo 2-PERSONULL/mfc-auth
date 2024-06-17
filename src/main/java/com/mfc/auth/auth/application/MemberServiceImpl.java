@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mfc.auth.auth.domain.Member;
+import com.mfc.auth.auth.dto.resp.AuthInfoResponse;
 import com.mfc.auth.auth.dto.kafka.DeleteProfileDto;
 import com.mfc.auth.auth.dto.req.ModifyPasswordReqDto;
 import com.mfc.auth.auth.dto.resp.MemberNameRespDto;
@@ -68,5 +69,16 @@ public class MemberServiceImpl implements MemberService {
 	private Member isExist(String uuid) {
 		return memberRepository.findByUuid(uuid)
 				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+	}
+
+	@Override
+	public AuthInfoResponse getBirthGender(String uuid) {
+		Member member = memberRepository.findByUuid(uuid)
+				.orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+		return AuthInfoResponse.builder()
+				.userBirth(member.getBirth())
+				.userGender(member.getGender())
+				.build();
 	}
 }
