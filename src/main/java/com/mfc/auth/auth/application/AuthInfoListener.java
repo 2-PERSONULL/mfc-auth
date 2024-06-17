@@ -22,6 +22,7 @@ public class AuthInfoListener {
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final MemberRepository memberRepository;
 
+	// 카프카 동시성 문제 해결
 	@KafkaListener(topics = "auth-info-request", groupId = "auth-info-group")
 	public synchronized void handleAuthInfoRequest(RequestUserInfoDto dto) {
 
