@@ -1,4 +1,4 @@
-package com.mfc.auth.auth.dto.kafka;
+package com.mfc.auth.auth.dto.resp;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AuthInfoResponse {
-	private String userId;
 	private Short userGender;
 	private LocalDate userBirth;
 }
