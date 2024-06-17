@@ -23,7 +23,7 @@ public class AuthInfoListener {
 	private final MemberRepository memberRepository;
 
 	@KafkaListener(topics = "auth-info-request", groupId = "auth-info-group")
-	public void handleAuthInfoRequest(RequestUserInfoDto dto) {
+	public synchronized void handleAuthInfoRequest(RequestUserInfoDto dto) {
 
 			String userId = dto.getUserId();
 
